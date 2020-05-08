@@ -70,7 +70,14 @@ class NoteProvider extends MainProvider {
   }
 
   sendData(List<MemberModel> friend, void callback) {
-    repository.sendNote(note: note, friend: friend).then((value) => callback);
+    getUser().then((member) {
+      NoteModel temp = new NoteModel(
+          note.title,
+          new MemberModel(
+              id: member.uid, name: member.displayName, email: member.email),
+          note.content);
+      repository.sendNote(note: temp, friend: friend).then((value) => callback);
+    });
   }
 
   clear() {

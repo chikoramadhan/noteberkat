@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
 import 'package:note_berkat/src/apis/main_api.dart';
 import 'package:note_berkat/src/models/member_model.dart';
 import 'package:note_berkat/src/models/note_model.dart';
 import 'package:note_berkat/src/providers/note_provider.dart';
+import 'package:provider/provider.dart';
 
 class NoteApi extends MainApi {
   StreamSubscription _addListener, _changedListener, _deleteListener;
@@ -46,11 +46,10 @@ class NoteApi extends MainApi {
 
   Future sendNote(
       NoteModel note, List<MemberModel> friend, BuildContext context) async {
-    NoteModel temp = new NoteModel(note.title, note.creator, note.content);
     friend.forEach((element) async {
       DatabaseReference _query =
           database.reference().child("note").child(element.id).push();
-      await _query.set(temp.toJson());
+      await _query.set(note.toJson());
     });
   }
 
