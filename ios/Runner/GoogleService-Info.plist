@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>831516908257-hom3d149ovs36nd5fn6b8e8o0d5r9ndf.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.831516908257-hom3d149ovs36nd5fn6b8e8o0d5r9ndf</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>831516908257-hef31ftjod0rv205j379jevc9imi7ag3.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDf09-OkAE5LoFAJ00VpPl1kxHyHaoiOUM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>831516908257</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.note</string>
+	<key>PROJECT_ID</key>
+	<string>ornate-unity-138423</string>
+	<key>STORAGE_BUCKET</key>
+	<string>ornate-unity-138423.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:831516908257:ios:c546a2784711078b51f5a0</string>
+	<key>DATABASE_URL</key>
+	<string>https://ornate-unity-138423.firebaseio.com</string>
+</dict>
+</plist>
