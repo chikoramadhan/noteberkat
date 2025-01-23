@@ -1,11 +1,18 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'package:dio/dio.dart';
+
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class MainApi {
-  final FirebaseDatabase _database = FirebaseDatabase.instance;
+  Dio get dio {
+    Dio dio = Dio();
 
-  FirebaseDatabase get database {
-    _database.setPersistenceEnabled(true);
-    _database.setPersistenceCacheSizeBytes(10000000);
-    return _database;
+    dio.interceptors.add(PrettyDioLogger(
+      requestHeader: true,
+      requestBody: true,
+      responseBody: false,
+      responseHeader: false,
+      error: true,
+    ));
+    return dio;
   }
 }

@@ -1,12 +1,17 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
-import 'package:note_berkat/src/providers/app_provider.dart';
-import 'package:note_berkat/src/providers/friend_provider.dart';
-import 'package:note_berkat/src/providers/note_provider.dart';
-import 'package:note_berkat/src/uis/friend_ui.dart';
-import 'package:note_berkat/src/uis/note_ui.dart';
-import 'package:note_berkat/src/uis/setting_ui.dart';
 import 'package:provider/provider.dart';
+import 'package:restart_app/restart_app.dart';
+import 'package:shorebird_code_push/shorebird_code_push.dart';
+import 'package:versus/src/models/user_model.dart';
+import 'package:versus/src/providers/app_provider.dart';
+import 'package:versus/src/providers/main_provider.dart';
+import 'package:versus/src/providers/note_provider.dart';
+import 'package:versus/src/resources/helper.dart';
+import 'package:versus/src/uis/admin2_ui.dart';
+import 'package:versus/src/uis/admin_ui.dart';
+import 'package:versus/src/uis/note_ui.dart';
+import 'package:versus/src/uis/setting_ui.dart';
 
 class AppUI extends StatefulWidget {
   @override
@@ -14,15 +19,42 @@ class AppUI extends StatefulWidget {
 }
 
 class _State extends State<AppUI> with AfterLayoutMixin {
-  TextStyle _bottomNavStyle = new TextStyle(fontSize: 12.0);
-
   PageController _controller = new PageController();
 
+  UserModel? user;
+  bool updating = false;
+
   @override
-  void afterFirstLayout(BuildContext context) {
-    Provider.of<AppProvider>(context, listen: false).sendToken();
-    Provider.of<NoteProvider>(context, listen: false).loadAllData(context);
-    Provider.of<FriendProvider>(context, listen: false).initFriend(context);
+  void afterFirstLayout(BuildContext context) async {
+    //Provider.of<AppProvider>(context, listen: false).sendToken();
+
+    await checkUpdate();
+    await Provider.of<NoteProvider>(context, listen: false)
+        .loadAllData(context: context);
+    MainProvider().getMember().then((value) {
+      setState(() {
+        user = value;
+      });
+    });
+  }
+
+  Future checkUpdate() async {
+    final shorebirdCodePush = ShorebirdCodePush();
+    final isUpdateAvailable =
+        await shorebirdCodePush.isNewPatchAvailableForDownload();
+
+    if (isUpdateAvailable) {
+      setState(() {
+        updating = true;
+      });
+
+      await Future.wait([
+        shorebirdCodePush.downloadUpdateIfAvailable(),
+        Future<void>.delayed(const Duration(seconds: 6)),
+      ]);
+
+      Restart.restartApp();
+    }
   }
 
   @override
@@ -33,22 +65,38 @@ class _State extends State<AppUI> with AfterLayoutMixin {
   }
 
   Widget _body() {
+    if (updating) {
+      return Container(
+        color: Colors.white,
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(
+                height: 20,
+              ),
+              Text("Updating Apps...")
+            ],
+          ),
+        ),
+      );
+    }
+
     return Container(
       color: Colors.white,
       child: Column(
         children: <Widget>[
           Expanded(
             child: PageView(
+              physics: NeverScrollableScrollPhysics(),
               controller: _controller,
               onPageChanged: (index) {
                 Provider.of<AppProvider>(context, listen: false)
                     .changePage(index);
               },
-              children: <Widget>[
-                NoteUI(),
-                FriendUI(),
-                SettingUI(),
-              ],
+              children: _screen(),
             ),
           ),
           _bottomNavigationBar(),
@@ -83,39 +131,67 @@ class _State extends State<AppUI> with AfterLayoutMixin {
               onTap: (index) {
                 Provider.of<AppProvider>(context, listen: false)
                     .changePage(index);
-                _controller.animateToPage(index,
+                _controller.jumpToPage(
+                    index /*,
                     duration: Duration(milliseconds: 300),
-                    curve: Curves.linear);
+                    curve: Curves.linear*/
+                    );
               },
               currentIndex: app.active,
-              items: [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.note),
-                  title: Text(
-                    'Note',
-                    style: _bottomNavStyle,
-                  ),
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.people),
-                  title: Text(
-                    'Friend',
-                    style: _bottomNavStyle,
-                  ),
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.assignment),
-                  title: Text(
-                    'Settings',
-                    style: _bottomNavStyle,
-                  ),
-                ),
-              ],
+              items: _items(),
               showUnselectedLabels: true,
             );
           }),
         )
       ],
     );
+  }
+
+  List<Widget> _screen() {
+    List<Widget> _list = [];
+
+    if (user == null) {
+      return _list;
+    }
+
+    _list.add(NoteUI());
+    if (user != null && isAdmin(user)) {
+      _list.add(AdminUI());
+      _list.add(Admin2UI());
+    }
+    _list.add(SettingUI());
+    return _list;
+  }
+
+  List<BottomNavigationBarItem> _items() {
+    List<BottomNavigationBarItem> _list = [];
+    _list.add(BottomNavigationBarItem(
+      icon: Icon(Icons.note),
+      label: "Search",
+    ));
+
+    if (user != null && isAdmin(user)) {
+      _list.add(BottomNavigationBarItem(
+        icon: Icon(
+          Icons.check_box_rounded,
+          color: Colors.green,
+        ),
+        label: 'Report',
+      ));
+
+      _list.add(BottomNavigationBarItem(
+        icon: Icon(
+          Icons.close,
+          color: Colors.red,
+        ),
+        label: 'Report',
+      ));
+    }
+
+    _list.add(BottomNavigationBarItem(
+      icon: Icon(Icons.assignment),
+      label: "Settings",
+    ));
+    return _list;
   }
 }

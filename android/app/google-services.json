@@ -1,34 +1,33 @@
 {
   "project_info": {
-    "project_number": "831516908257",
-    "firebase_url": "https://ornate-unity-138423.firebaseio.com",
-    "project_id": "ornate-unity-138423",
-    "storage_bucket": "ornate-unity-138423.appspot.com"
+    "project_number": "364967054719",
+    "project_id": "versus-e3c3f",
+    "storage_bucket": "versus-e3c3f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:831516908257:android:dad0f45d688e7a1b51f5a0",
+        "mobilesdk_app_id": "1:364967054719:android:c890ef75f3014dbd165e4a",
         "android_client_info": {
-          "package_name": "com.example.note"
+          "package_name": "com.app.versus"
         }
       },
       "oauth_client": [
         {
-          "client_id": "831516908257-lu0ue9hi99b4hq81no17u50mp6tph35u.apps.googleusercontent.com",
+          "client_id": "364967054719-iao2er7tc93gnmt2deeg2avec8lar976.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyClXYiWW6pMuCr_OGMwcDg30UPiUZsPW6g"
+          "current_key": "AIzaSyBlvMaqm13yhSrSuP2m-LbZ9PzOsZNCF5Q"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "831516908257-lu0ue9hi99b4hq81no17u50mp6tph35u.apps.googleusercontent.com",
+              "client_id": "364967054719-iao2er7tc93gnmt2deeg2avec8lar976.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

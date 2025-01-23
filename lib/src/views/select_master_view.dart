@@ -1,0 +1,3 @@
+class SelectMasterView {
+  void back() {}
+}

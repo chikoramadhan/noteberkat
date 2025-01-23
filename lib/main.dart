@@ -1,20 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:note_berkat/src/providers/app_provider.dart';
-import 'package:note_berkat/src/providers/friend_provider.dart';
-import 'package:note_berkat/src/providers/main_provider.dart';
-import 'package:note_berkat/src/providers/note_provider.dart';
-import 'package:note_berkat/src/providers/setting_provider.dart';
-import 'package:note_berkat/src/resources/helper.dart';
-import 'package:note_berkat/src/uis/app_ui.dart';
-import 'package:note_berkat/src/uis/friend_add_ui.dart';
-import 'package:note_berkat/src/uis/front_page_ui.dart';
-import 'package:note_berkat/src/uis/note_add_ui.dart';
-import 'package:note_berkat/src/uis/note_share_ui.dart';
 import 'package:provider/provider.dart';
+import 'package:versus/src/providers/app_provider.dart';
+import 'package:versus/src/providers/archive_provider.dart';
+import 'package:versus/src/providers/chat_provider.dart';
+import 'package:versus/src/providers/filter_provider.dart';
+import 'package:versus/src/providers/main_provider.dart';
+import 'package:versus/src/providers/note_provider.dart';
+import 'package:versus/src/providers/report_provider.dart';
+import 'package:versus/src/providers/request_provider.dart';
+import 'package:versus/src/providers/select_master_provider.dart';
+import 'package:versus/src/providers/setting_provider.dart';
+import 'package:versus/src/providers/testing_provider.dart';
+import 'package:versus/src/resources/helper.dart';
+import 'package:versus/src/uis/app_ui.dart';
+import 'package:versus/src/uis/archive_ui.dart';
+import 'package:versus/src/uis/chat_ui.dart';
+import 'package:versus/src/uis/front_page_ui.dart';
+import 'package:versus/src/uis/history_ui.dart';
+import 'package:versus/src/uis/merge_ui.dart';
+import 'package:versus/src/uis/note_add_ui.dart';
+import 'package:versus/src/uis/request_add_ui.dart';
+import 'package:versus/src/uis/request_ui.dart';
+import 'package:versus/src/uis/select_master_ui.dart';
+import 'package:versus/src/uis/testing_add_ui.dart';
+import 'package:versus/src/uis/testing_ui.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MainProvider().getUser().then((value) {
+
+  MainProvider().getMember().then((value) {
+    userModel = value;
     bool _loggedIn;
 
     if (value == null) {
@@ -27,8 +42,14 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (context) => AppProvider()),
         ChangeNotifierProvider(create: (context) => NoteProvider()),
-        ChangeNotifierProvider(create: (context) => FriendProvider()),
+        ChangeNotifierProvider(create: (context) => SelectMasterProvider()),
         ChangeNotifierProvider(create: (context) => SettingProvider()),
+        ChangeNotifierProvider(create: (context) => ChatProvider()),
+        ChangeNotifierProvider(create: (context) => ReportProvider()),
+        ChangeNotifierProvider(create: (context) => ArchiveProvider()),
+        ChangeNotifierProvider(create: (context) => RequestProvider()),
+        ChangeNotifierProvider(create: (context) => FilterProvider()),
+        ChangeNotifierProvider(create: (context) => TestingProvider()),
       ],
       child: Main(
         loggedIn: _loggedIn,
@@ -40,19 +61,26 @@ void main() {
 class Main extends StatelessWidget {
   final bool loggedIn;
 
-  Main({this.loggedIn});
+  Main({this.loggedIn = false});
 
   @override
   Widget build(BuildContext context) {
-    MainProvider().initFirebase();
+    // MainProvider().initFirebase();
 
     return MaterialApp(
       routes: {
         kRouteApp: (context) => AppUI(),
         kRouteFrontPage: (context) => FrontPageUI(),
         kRouteNoteAdd: (context) => NoteAddUI(),
-        kRouteFriendAdd: (context) => FriendAddUI(),
-        kRouteNoteShare: (context) => NoteShareUI(),
+        kRouteTestingAdd: (context) => TestingAddUI(),
+        kRouteRequestAdd: (context) => RequestAddUI(),
+        kRouteFriendAdd: (context) => SelectMasterUI(),
+        kRouteChat: (context) => ChatUI(),
+        kRouteArchive: (context) => ArchiveUI(),
+        kRouteRequest: (context) => RequestUI(),
+        kRouteTesting: (context) => TestingUI(),
+        kRouteMerge: (context) => MergeUI(),
+        kRouteHistory: (context) => HistoryUI(),
       },
       initialRoute: loggedIn ? kRouteApp : kRouteFrontPage,
     );

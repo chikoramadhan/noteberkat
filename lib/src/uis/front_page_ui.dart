@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:ui';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
-import 'package:note_berkat/src/resources/helper.dart';
-import 'package:note_berkat/src/streams/front_stream.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:versus/src/models/user_model.dart';
+import 'package:versus/src/resources/helper.dart';
+import 'package:versus/src/streams/front_stream.dart';
 
 class FrontPageUI extends StatefulWidget {
   @override
@@ -13,15 +16,15 @@ class FrontPageUI extends StatefulWidget {
 }
 
 class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
-  Animation<double> _blurAnimation;
-  AnimationController _blurController;
+  late Animation<double> _blurAnimation;
+  late AnimationController _blurController;
 
   final TextEditingController _loginEmailController =
       new TextEditingController();
   final TextEditingController _loginPasswordController =
       new TextEditingController();
 
-  final List<FocusNode> _loginNode = new List();
+  final List<FocusNode> _loginNode = [];
 
   final GlobalKey _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -44,12 +47,12 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
     fontFamily: "Saira",
   );
   TextStyle _infoStyle = new TextStyle(
-    color: Colors.white70,
-    fontSize: 13.0,
-    fontWeight: FontWeight.w600,
+    color: Colors.white,
+    fontSize: 14.0,
+    fontWeight: FontWeight.w500,
   );
   TextStyle _infoStyleBlue = new TextStyle(
-    color: Colors.blue,
+    color: Colors.green,
     fontSize: 13.0,
     fontWeight: FontWeight.w600,
   );
@@ -63,7 +66,8 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.bottom]);
 
     _loginNode.add(new FocusNode());
     _loginNode.add(new FocusNode());
@@ -105,30 +109,35 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
           } else {
             return showDialog(
                   context: context,
-                  child: new AlertDialog(
+                  builder: (_) => new AlertDialog(
                     title: new Text('Do you want to exit this application?'),
                     content: new Text('We hate to see you leave...'),
                     actions: <Widget>[
-                      new FlatButton(
+                      new MaterialButton(
                         onPressed: () => Navigator.of(context).pop(false),
                         child: new Text('No'),
                       ),
-                      new FlatButton(
+                      new MaterialButton(
                         onPressed: () => Navigator.of(context).pop(true),
                         child: new Text('Yes'),
                       ),
                     ],
                   ),
-                ) ??
-                false;
+                ).then((value) => value as bool) ??
+                false as Future<bool>;
           }
         });
   }
 
   Widget _background() {
-    return Image.asset(
+    /*return Image.asset(
       "images/bg.jpg",
       fit: BoxFit.cover,
+      height: double.infinity,
+      width: double.infinity,
+    );*/
+    return Container(
+      color: Color(0xFF2A363F),
       height: double.infinity,
       width: double.infinity,
     );
@@ -171,6 +180,16 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
     );
   }
 
+  Widget _logo() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 0),
+      child: Image.asset(
+        "images/logo.png",
+        fit: BoxFit.cover,
+      ),
+    );
+  }
+
   Widget _content() {
     return Visibility(
       child: Opacity(
@@ -185,28 +204,20 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  "NOTE",
-                  style: _titleStyle,
-                ),
-                Text(
-                  "BERKAT",
-                  style: _subtitleStyle,
-                ),
                 SizedBox(
-                  height: 30.0,
+                  height: 100.0,
                 ),
-                Text(
-                  "Lorem ipsum dolor sit amet",
-                  style: _infoStyle,
-                ),
+                _logo(),
                 SizedBox(
-                  height: 5.0,
+                  height: 40.0,
                 ),
-                Text(
-                  "consectetur adipiscing elit. Integer arcu.",
-                  style: _infoStyle,
+                Center(
+                  child: Text(
+                    "Breakthrough to the next level",
+                    style: _infoStyle,
+                  ),
                 ),
+                Expanded(child: Container()),
                 SizedBox(
                   height: 80.0,
                 ),
@@ -254,7 +265,7 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
                   height: 10.0,
                 ),
               ],
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize.max,
             ),
             alignment: Alignment.bottomLeft),
       ),
@@ -269,29 +280,16 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
         child: Container(
             margin: EdgeInsets.fromLTRB(
               30.0,
-              30.0,
+              0.0,
               30.0,
               0.0,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Text(
-                      "NOTE",
-                      style: _titleStyle,
-                    ),
-                    Text(
-                      "BERKAT",
-                      style: _subtitleStyle,
-                    ),
-                  ],
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                ),
+                _logo(),
                 SizedBox(
-                  height: 50.0,
+                  height: 60,
                 ),
                 _field(
                   Icons.email,
@@ -334,81 +332,6 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
             alignment: Alignment.center),
       ),
       visible: _currentState == 1,
-    );
-  }
-
-  Widget _register() {
-    return Visibility(
-      child: Opacity(
-        opacity: 1.0 - _blurController.value,
-        child: Container(
-            margin: EdgeInsets.fromLTRB(
-              30.0,
-              30.0,
-              30.0,
-              0.0,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Text(
-                      "NOTE",
-                      style: _titleStyle,
-                    ),
-                    Text(
-                      "BERKAT",
-                      style: _subtitleStyle,
-                    ),
-                  ],
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                ),
-                SizedBox(
-                  height: 50.0,
-                ),
-                _field(
-                  Icons.email,
-                  "Email",
-                  _loginEmailController,
-                  _loginNode,
-                  0,
-                  false,
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                _field(
-                  Icons.lock,
-                  "Password",
-                  _loginPasswordController,
-                  _loginNode,
-                  1,
-                  true,
-                ),
-                SizedBox(
-                  height: 60.0,
-                ),
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 600.0),
-                  child: Row(
-                    children: <Widget>[
-                      _button(
-                        "Sign Up",
-                        _infoStyle,
-                        Colors.blue,
-                        _doRegister,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              mainAxisSize: MainAxisSize.min,
-            ),
-            alignment: Alignment.center),
-      ),
-      visible: _currentState == 2,
     );
   }
 
@@ -501,7 +424,7 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
   Widget _control() {
     return Row(
       children: <Widget>[
-        _button(
+        /*_button(
           "Sign Up",
           _infoStyle,
           Colors.blue,
@@ -509,7 +432,7 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
         ),
         SizedBox(
           width: 40.0,
-        ),
+        ),*/
         _button(
           "Sign In",
           _infoStyleBlue,
@@ -520,7 +443,7 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _layer() {
+/*  Widget _layer() {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -534,7 +457,7 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
         ),
       ),
     );
-  }
+  }*/
 
   Widget _blur() {
     return Container(
@@ -542,8 +465,9 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
       height: double.infinity,
       child: BackdropFilter(
         filter: ImageFilter.blur(
-            sigmaX: _currentState == 1 ? 6.0 : _blurAnimation.value * 6,
-            sigmaY: _currentState == 1 ? 6.0 : _blurAnimation.value * 6),
+            sigmaX: _currentState == 1 ? 6.0 : _blurAnimation.value * 6 + 0.001,
+            sigmaY:
+                _currentState == 1 ? 6.0 : _blurAnimation.value * 6 + 0.001),
         child: Container(
           color: Colors.black87.withOpacity(0.1),
         ),
@@ -555,30 +479,58 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
     if (_progress > 0) {
       return StreamBuilder(
         stream: frontStreamBuilder.member,
-        builder: (context, AsyncSnapshot<FirebaseUser> snapshot) {
+        builder: (context, AsyncSnapshot<UserModel?> snapshot) {
           if (snapshot.hasData) {
             WidgetsBinding.instance.addPostFrameCallback(
               (_) async {
-                showMessage(_scaffoldKey, "Login success");
+                showMessage(
+                    _scaffoldKey as GlobalKey<ScaffoldState>, "Login success");
+                _progress = 0;
                 if (_currentState == 1) {
-                  _loginEmailController.text = "";
-                  Navigator.of(context).pushReplacementNamed(kRouteApp);
-                }
-                if (_currentState == 2) {
-                  frontStreamBuilder.sendToDatabase().then((value) {
-                    Navigator.of(context).pushReplacementNamed(kRouteApp);
+                  //_loginEmailController.text = "";
+                  final Future<SharedPreferences> _prefs =
+                      SharedPreferences.getInstance();
+                  final SharedPreferences prefs = await _prefs;
+
+                  prefs
+                      .setString(
+                    kMemberLower,
+                    jsonEncode(
+                      snapshot.data!.toJson(),
+                    ),
+                  )
+                      .then((bool success) {
+                    if (success) {
+                      Navigator.of(context).pushReplacementNamed(kRouteApp);
+                    }
                   });
                 }
+                //if (_currentState == 2) {
+                //  frontStreamBuilder.sendToDatabase().then((value) {
+                //    print("okeee");
+                //    Navigator.of(context).pushReplacementNamed(kRouteApp);
+                //   });
+                //}
               },
             );
           } else if (snapshot.hasError) {
             WidgetsBinding.instance.addPostFrameCallback(
               (_) {
-                showMessage(_scaffoldKey, snapshot.error.toString());
+                if (jsonDecode((snapshot.error as DioError)
+                        .response
+                        .toString())[kParamStatusCode] ==
+                    400) {
+                  showMessage(_scaffoldKey as GlobalKey<ScaffoldState>,
+                      "Email / password salah");
+                } else {
+                  showMessage(_scaffoldKey as GlobalKey<ScaffoldState>,
+                      snapshot.error.toString());
+                }
+
                 setState(
                   () {
                     if (_currentState == 1) {
-                      _loginPasswordController.text = "";
+                      //_loginPasswordController.text = "";
                     }
                     _progress = 0;
                   },
@@ -609,12 +561,12 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
     return Stack(
       children: <Widget>[
         _background(),
-        _layer(),
+        //_layer(),
         _blur(),
         _backButton(),
+
         _content(),
         _login(),
-        _register(),
         _builder(),
       ],
     );
@@ -625,10 +577,10 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
     _blurController.forward();
   }
 
-  void _gotoRegister() {
+/*  void _gotoRegister() {
     _state = 2;
     _blurController.forward();
-  }
+  }*/
 
   void _doLogin() {
     if (_valid()) {
@@ -643,27 +595,16 @@ class _State extends State<FrontPageUI> with SingleTickerProviderStateMixin {
     }
   }
 
-  void _doRegister() {
-    if (_valid()) {
-      setState(() {
-        _progress = 1;
-      });
-      FocusScope.of(context).requestFocus(FocusNode());
-      frontStreamBuilder.doRegister(
-        _loginEmailController.text,
-        _loginPasswordController.text,
-      );
-    }
-  }
-
   bool _valid() {
     if (_currentState == 1 || _currentState == 2) {
       if (_loginEmailController.text.isEmpty) {
-        showMessage(_scaffoldKey, "Email cannot empty");
+        showMessage(
+            _scaffoldKey as GlobalKey<ScaffoldState>, "Email cannot empty");
         return false;
       }
       if (_loginPasswordController.text.isEmpty) {
-        showMessage(_scaffoldKey, "Password cannot empty");
+        showMessage(
+            _scaffoldKey as GlobalKey<ScaffoldState>, "Password cannot empty");
         return false;
       }
       return true;

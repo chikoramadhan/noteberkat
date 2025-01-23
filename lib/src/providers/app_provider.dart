@@ -1,4 +1,4 @@
-import 'package:note_berkat/src/providers/main_provider.dart';
+import 'package:versus/src/providers/main_provider.dart';
 
 class AppProvider extends MainProvider {
   int _active = 0;

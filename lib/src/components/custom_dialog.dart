@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title, description;
-  final Image image;
+  final Image? image;
   final VoidCallback confirmClick;
 
   CustomDialog({
-    @required this.title,
-    @required this.description,
-    @required this.confirmClick,
+    required this.title,
+    required this.description,
+    required this.confirmClick,
     this.image,
   });
 
@@ -69,13 +69,13 @@ class CustomDialog extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  FlatButton(
+                  TextButton(
                     onPressed: () {
                       Navigator.of(context).pop(); // To close the dialog
                     },
                     child: Text("Cancel"),
                   ),
-                  FlatButton(
+                  TextButton(
                     onPressed: confirmClick,
                     child: Text("Confirm"),
                   ),

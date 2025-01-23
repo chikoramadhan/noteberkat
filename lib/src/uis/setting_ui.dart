@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:note_berkat/src/components/custom_app_bar.dart';
-import 'package:note_berkat/src/providers/setting_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:versus/src/components/custom_app_bar.dart';
+import 'package:versus/src/providers/setting_provider.dart';
 
 class SettingUI extends StatefulWidget {
   @override
@@ -10,8 +10,6 @@ class SettingUI extends StatefulWidget {
 }
 
 class _State extends State<SettingUI> {
-  BuildContext _context;
-
   @override
   void initState() {
     super.initState();
@@ -24,8 +22,6 @@ class _State extends State<SettingUI> {
 
   @override
   Widget build(BuildContext context) {
-    _context = context;
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
@@ -77,15 +73,6 @@ class _State extends State<SettingUI> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _divider() {
-    return Container(
-      height: 0.15,
-      width: double.infinity,
-      color: Colors.grey,
-      margin: EdgeInsets.only(left: 20.0, right: 20.0),
     );
   }
 

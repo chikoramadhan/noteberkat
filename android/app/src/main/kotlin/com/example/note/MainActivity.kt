@@ -1,4 +1,4 @@
-package com.example.note
+package com.app.versus
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
